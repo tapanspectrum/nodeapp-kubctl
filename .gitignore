@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+.npm/
+.pnpm-store/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+.envrc
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.pid.lock
+tmp/
+temp/
+
+# Coverage and test output
+coverage/
+.nyc_output/
+
+# Build output
+dist/
+build/
+
+# Docker local files
+docker-compose.override.yml
+.docker/
+
+# Caches
+.cache/
+.eslintcache
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Kubernetes local secret manifests (keep deploy manifests tracked)
+k8s/*secret*.yaml
+k8s/secrets*.yaml
