@@ -10,7 +10,8 @@ pipeline {
 
         stage('Clone') {
             steps {
-                git 'https://github.com/tapanspectrum/nodeapp-kubctl.git'
+                git 'https://github.com/tapanspectrum/nodeapp-kubctl.git',
+                branch: 'main'
             }
         }
 
