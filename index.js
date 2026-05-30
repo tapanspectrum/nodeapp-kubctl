@@ -75,7 +75,7 @@ app.delete("/users/:id", (req, res) => {
 });
 
 // Start server
-app.listen(process.env.PORT || PORT, () => {
-  const listeningPort = process.env.PORT || PORT;
-  console.log(`Server running at http://localhost:${listeningPort}`);
+const listeningPort = process.env.PORT || PORT;
+app.listen(listeningPort, "0.0.0.0", () => {
+  console.log(`Server running on 0.0.0.0:${listeningPort}`);
 });

@@ -98,7 +98,7 @@ pipeline {
 					set -e
 					IMAGE_NAME="$DOCKER_USER/$APP_NAME"
 					cp k8s/deployment.yaml k8s/deployment.ci.yaml
-					sed -i "s|YOUR_DOCKERHUB/node-app:latest|$IMAGE_NAME:$TAG|g" k8s/deployment.ci.yaml
+					sed -i -E "s|^([[:space:]]*image:[[:space:]]*).*$|\\1$IMAGE_NAME:$TAG|" k8s/deployment.ci.yaml
 
 					kubectl apply -n "$K8S_NAMESPACE" -f k8s/deployment.ci.yaml
 					kubectl apply -n "$K8S_NAMESPACE" -f k8s/service.yaml
