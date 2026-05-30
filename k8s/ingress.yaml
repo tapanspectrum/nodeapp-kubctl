@@ -10,7 +10,7 @@ spec:
   ingressClassName: nginx
 
   rules:
-    - host: 74.50.80.166
+    - host: nearyouindia.com
 
       http:
         paths:
