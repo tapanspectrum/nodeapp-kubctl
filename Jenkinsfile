@@ -31,40 +31,40 @@ pipeline {
             }
         }
 
-        stage('Docker Login') {
-            steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-creds',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
-                )]) {
+        // stage('Docker Login') {
+        //     steps {
+        //         withCredentials([usernamePassword(
+        //             credentialsId: 'dockerhub-creds',
+        //             usernameVariable: 'DOCKER_USER',
+        //             passwordVariable: 'DOCKER_PASS'
+        //         )]) {
 
-                    sh '''
-                    set -e
-                    mkdir -p "$WORKSPACE/.docker"
-                    export DOCKER_CONFIG="$WORKSPACE/.docker"
-                    printf '%s' "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin docker.io
-                    '''
-                }
-            }
-        }
+        //             sh '''
+        //             set -e
+        //             mkdir -p "$WORKSPACE/.docker"
+        //             export DOCKER_CONFIG="$WORKSPACE/.docker"
+        //             printf '%s' "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin docker.io
+        //             '''
+        //         }
+        //     }
+        // }
 
-        stage('Push Docker Image') {
-            steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-creds',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
-                )]) {
-                    sh '''
-                    set -e
-                    export DOCKER_CONFIG="$WORKSPACE/.docker"
-                    IMAGE_NAME="$DOCKER_USER/$APP_NAME"
-                    docker push "$IMAGE_NAME:$TAG"
-                    '''
-                }
-            }
-        }
+        // stage('Push Docker Image') {
+        //     steps {
+        //         withCredentials([usernamePassword(
+        //             credentialsId: 'dockerhub-creds',
+        //             usernameVariable: 'DOCKER_USER',
+        //             passwordVariable: 'DOCKER_PASS'
+        //         )]) {
+        //             sh '''
+        //             set -e
+        //             export DOCKER_CONFIG="$WORKSPACE/.docker"
+        //             IMAGE_NAME="$DOCKER_USER/$APP_NAME"
+        //             docker push "$IMAGE_NAME:$TAG"
+        //             '''
+        //         }
+        //     }
+        // }
 
         stage('Deploy Kubernetes') {
             steps {
