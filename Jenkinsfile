@@ -30,7 +30,10 @@ pipeline {
                 )]) {
 
                     sh '''
-                    echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                    set -e
+                    mkdir -p "$WORKSPACE/.docker"
+                    export DOCKER_CONFIG="$WORKSPACE/.docker"
+                    printf '%s' "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin docker.io
                     '''
                 }
             }
@@ -38,7 +41,11 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                sh 'docker push $IMAGE_NAME:$TAG'
+                sh '''
+                set -e
+                export DOCKER_CONFIG="$WORKSPACE/.docker"
+                docker push $IMAGE_NAME:$TAG
+                '''
             }
         }
 
