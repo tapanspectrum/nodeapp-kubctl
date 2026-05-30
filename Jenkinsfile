@@ -3,7 +3,6 @@ pipeline {
 
     environment {
         APP_NAME = "node-app"
-        IMAGE_NAME = ""
         TAG = "${BUILD_NUMBER}"
     }
 
@@ -16,23 +15,19 @@ pipeline {
             }
         }
 
-        stage('Resolve Image Name') {
+        stage('Build Docker Image') {
             steps {
                 withCredentials([usernamePassword(
                     credentialsId: 'dockerhub-creds',
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
-                    script {
-                        env.IMAGE_NAME = "${DOCKER_USER}/${env.APP_NAME}"
-                    }
+                    sh '''
+                    set -e
+                    IMAGE_NAME="$DOCKER_USER/$APP_NAME"
+                    docker build -t "$IMAGE_NAME:$TAG" .
+                    '''
                 }
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                sh 'docker build -t $IMAGE_NAME:$TAG .'
             }
         }
 
@@ -56,24 +51,38 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                sh '''
-                set -e
-                export DOCKER_CONFIG="$WORKSPACE/.docker"
-                docker push $IMAGE_NAME:$TAG
-                '''
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh '''
+                    set -e
+                    export DOCKER_CONFIG="$WORKSPACE/.docker"
+                    IMAGE_NAME="$DOCKER_USER/$APP_NAME"
+                    docker push "$IMAGE_NAME:$TAG"
+                    '''
+                }
             }
         }
 
         stage('Deploy Kubernetes') {
             steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh '''
+                    set -e
+                    IMAGE_NAME="$DOCKER_USER/$APP_NAME"
+                    sed -i "s|YOUR_DOCKERHUB/node-app:latest|$IMAGE_NAME:$TAG|g" k8s/deployment.yaml
 
-                sh '''
-                sed -i "s|YOUR_DOCKERHUB/node-app:latest|$IMAGE_NAME:$TAG|g" k8s/deployment.yaml
-
-                kubectl apply -f k8s/deployment.yaml
-                kubectl apply -f k8s/service.yaml
-                kubectl apply -f k8s/ingress.yaml
-                '''
+                    kubectl apply -f k8s/deployment.yaml
+                    kubectl apply -f k8s/service.yaml
+                    kubectl apply -f k8s/ingress.yaml
+                    '''
+                }
             }
         }
     }
