@@ -2,7 +2,8 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "tapu_docker/node-app"
+        APP_NAME = "node-app"
+        IMAGE_NAME = ""
         TAG = "${BUILD_NUMBER}"
     }
 
@@ -12,6 +13,20 @@ pipeline {
             steps {
                 git branch: 'main',
                     url: 'https://github.com/tapanspectrum/nodeapp-kubctl.git'
+            }
+        }
+
+        stage('Resolve Image Name') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    script {
+                        env.IMAGE_NAME = "${DOCKER_USER}/${env.APP_NAME}"
+                    }
+                }
             }
         }
 
