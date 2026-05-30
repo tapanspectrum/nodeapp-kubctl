@@ -20,6 +20,11 @@ app.get("/users", (req, res) => {
   res.json(users);
 });
 
+// Root route for smoke checks through service/ingress
+app.get("/", (req, res) => {
+  res.status(200).json({ message: "node-app is running" });
+});
+
 // GET single user
 app.get("/users/:id", (req, res) => {
   const user = users.find((u) => u.id == req.params.id);
@@ -71,5 +76,6 @@ app.delete("/users/:id", (req, res) => {
 
 // Start server
 app.listen(process.env.PORT || PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+  const listeningPort = process.env.PORT || PORT;
+  console.log(`Server running at http://localhost:${listeningPort}`);
 });
