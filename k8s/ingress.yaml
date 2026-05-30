@@ -10,7 +10,7 @@ spec:
   ingressClassName: nginx
 
   rules:
-    - host: api.yourdomain.com
+    - host: 74.50.80.166
 
       http:
         paths:
