@@ -32,6 +32,27 @@ pipeline {
 			}
 		}
 
+		stage('Docker Login') {
+			steps {
+				withCredentials([usernamePassword(
+					credentialsId: 'dockerhub-creds',
+					usernameVariable: 'DOCKER_USER',
+					passwordVariable: 'DOCKER_PASS'
+				)]) {
+					sh '''
+					set -e
+					if [ -z "$DOCKER_USER" ] || [ -z "$DOCKER_PASS" ]; then
+					  echo "dockerhub-creds is missing username or password/token"
+					  exit 1
+					fi
+					mkdir -p "$WORKSPACE/.docker"
+					export DOCKER_CONFIG="$WORKSPACE/.docker"
+					printf '%s' "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin docker.io
+					'''
+				}
+			}
+		}
+
 		stage('Build Docker Image') {
 			steps {
 				withCredentials([usernamePassword(
@@ -43,23 +64,6 @@ pipeline {
 					set -e
 					IMAGE_NAME="$DOCKER_USER/$APP_NAME"
 					docker build -t "$IMAGE_NAME:$TAG" -t "$IMAGE_NAME:latest" .
-					'''
-				}
-			}
-		}
-
-		stage('Docker Login') {
-			steps {
-				withCredentials([usernamePassword(
-					credentialsId: 'dockerhub-creds',
-					usernameVariable: 'DOCKER_USER',
-					passwordVariable: 'DOCKER_PASS'
-				)]) {
-					sh '''
-					set -e
-					mkdir -p "$WORKSPACE/.docker"
-					export DOCKER_CONFIG="$WORKSPACE/.docker"
-					printf '%s' "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin docker.io
 					'''
 				}
 			}
