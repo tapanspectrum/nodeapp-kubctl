@@ -38,7 +38,10 @@ app.get("/users/:id", (req, res) => {
     });
   }
 
-  res.json(user);
+  res.status(200).json({
+      message: "Users retrieved successfully",
+      data: user
+    });
 });
 
 // POST create user
