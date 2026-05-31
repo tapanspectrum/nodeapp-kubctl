@@ -17,7 +17,7 @@ let users = [
 
 // GET all users
 app.get("/users", (req, res) => {
-  res.json(users);
+  res.status(200).json(users);
 });
 
 // Root route for smoke checks through service/ingress
