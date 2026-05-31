@@ -53,7 +53,10 @@ app.post("/users", (req, res) => {
 
   users.push(newUser);
 
-  res.status(201).json(newUser);
+  res.status(201).json({
+      message: "User created successfully",
+      data: newUser
+    });
 });
 
 // PUT update user
