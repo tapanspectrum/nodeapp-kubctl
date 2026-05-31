@@ -22,7 +22,7 @@ app.get("/users", (req, res) => {
 
 // Root route for smoke checks through service/ingress
 app.get("/", (req, res) => {
-  res.status(200).json({ message: "node-app is running" });
+  res.status(200).json({ message: "node-app is running started" });
 });
 
 // GET single user
